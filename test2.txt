@@ -1,0 +1,3 @@
+LW s0 0xF
+LW s1 0x4
+ADD v0 s0 s1

@@ -1,0 +1,7 @@
+LW s0 0x1
+LW s1 0x2
+LW s2 0x3
+LW s3 0x4
+ADD t0 s0 s1
+ADD t1 s2 s3
+SUB v0 t0 t1

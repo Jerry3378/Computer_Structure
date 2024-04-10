@@ -1,4 +1,3 @@
-LW $s1 0x100
-LW $s2 0x10
-
-ADD $v1 $s1 $s2
+LW s1 0x10
+LW s2 0x11
+ADD v0 s1 s2
