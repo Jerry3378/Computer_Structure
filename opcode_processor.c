@@ -16,6 +16,8 @@ int register_num[20] = {0};
 const char *registers[] = {"zero","v0","t0","t1","t2","t3","t4","t5","t6","t7","t8","t9","s0","s1","s2","s3",
     "s4","s5","s6","s7"};
 
+int program_counter = 0;    
+
 //this funcion helps to search register name to register index
 int get_register_num(char *token){
     for (int i = 0; i < sizeof(registers)/sizeof(registers[0]); i++){
@@ -28,6 +30,9 @@ int get_register_num(char *token){
 
 
 void ADD(char *text_line, char *file_name){
+    //함수 실행할때마다 program_counter은 1씩 증가
+    program_counter++;
+
     int index_num = 0;
     char *token_message[3];
     
@@ -60,6 +65,8 @@ void ADD(char *text_line, char *file_name){
 }
 
 void SUB(char *text_line,char *file_name){
+    program_counter++;
+
     int index_num = 0;
     char *token_message[3];
     
@@ -92,6 +99,8 @@ void SUB(char *text_line,char *file_name){
 }
 
 void MUL(char *text_line,char *file_name){
+    program_counter++;
+
     int index_num = 0;
     char *token_message[3];
     
@@ -124,6 +133,8 @@ void MUL(char *text_line,char *file_name){
 }
 
 void DIV(char *text_line,char *file_name){
+    program_counter++;
+
     int index_num = 0;
     char *token_message[3];
     
@@ -150,12 +161,21 @@ void DIV(char *text_line,char *file_name){
     rt = register_num+index_num;
     token_message[2] = token;
 
+    if (*rt == 0)
+    {
+        printf("division by Zero\n");
+        free(text_line);
+        exit(-1);
+    }
+    
     *rd = *rs / *rt;
     printf("%s> Divided %s(%d) to %s(%d) and changed %s to %d\n",file_name,token_message[1],*rs,token_message[2],*rt,token_message[0],*rd);
 
 }
 
 void LW(char *text_line,char *file_name){
+    program_counter++;
+
    int index_num = 0;
     char *token_message;
 
@@ -171,7 +191,13 @@ void LW(char *text_line,char *file_name){
     printf("%s> Loaded %d to %s\n",file_name,*rd,token_message);
 }   
 
-//test case
+void NOP(char *text_line,char *file_name){
+
+    program_counter++;
+    printf("%s> No operation\n",file_name);
+}
+
+
 int main(int argc,char *argv[]){
     
     char *command_line = NULL;
@@ -195,7 +221,7 @@ int main(int argc,char *argv[]){
 
     
 
-    file = fopen("test4.txt","r");
+    file = fopen("input.txt","r");
 
     if (file == NULL)
     {
@@ -217,13 +243,13 @@ int main(int argc,char *argv[]){
             
     }
 
+    //program counter을 0으로 초기화
+    program_counter = 0;
     
-    
-    for (int i = 0; i < line_count; i++)
-    {
+        while(program_counter < line_count){
        
-        command_line = (char *)malloc(sizeof(char) * strlen(text_box[i]));
-        strcpy(command_line,text_box[i]);
+        command_line = (char *)malloc(sizeof(char) * strlen(text_box[program_counter]));
+        strcpy(command_line,text_box[program_counter]);
 
         printf("%s",command_line);
         
@@ -231,27 +257,30 @@ int main(int argc,char *argv[]){
 
         if (strcmp(opcode,"ADD") == 0)
         {
-            ADD(text_box[i],argv[1]);
+            ADD(command_line,argv[1]);
         }
         else if (strcmp(opcode,"SUB") == 0)
         {
-            SUB(text_box[i],argv[1]);
+            SUB(command_line,argv[1]);
         }    
         else if (strcmp(opcode,"MUL") == 0)
         {
-            MUL(text_box[i],argv[1]);
+            MUL(command_line,argv[1]);
         }
         else if (strcmp(opcode,"DIV") == 0)
         {
-            DIV(text_box[i],argv[1]);
+            DIV(command_line,argv[1]);
         }
         else if (strcmp(opcode,"LW") == 0)
         {
             LW(command_line,argv[1]);
+        } 
+        else if(strcmp(opcode,"NOP") == 0){
+            NOP(command_line,argv[1]);
         }
         
         free(command_line);
-    }
+        }
 
     printf("%d\n",register_num[1]);
     
