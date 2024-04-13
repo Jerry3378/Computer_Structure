@@ -1,24 +1,26 @@
+
+//This file is only used for debugging the integrated file.
+
+//#include "opcode_processor.c" // File that functions that process commands are implemented.
+//#include "parser.c" // A file that implemented to analyze commands.
+
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-
-int MAX_ROWS = 1000;
-int MAX_COLS = 100;
-
-//global variable for registers
-int v0; //return result register
-int t0,t1,t2,t3,t4,t5,t6,t7,t8,t9;  //register for temporary
-int s0,s1,s2,s3,s4,s5,s6,s7;    //register for using save
-
+#include "global_register.h"
+#include "opcode_processor.h"
+#include "parser.h"
 
 
 int main(int argc,char *argv[]){
 
-    FILE *file = NULL;
-    //txt에서 문자들을 읽어 문자를 담을 메시지 박스//
-    char text_box[MAX_ROWS][MAX_COLS];
-    //instrucion들의 수
+    char *file_name;
     
+    char *command_line = NULL;
+    FILE *file = NULL;
+    // Array to store the string for each line from the text file
+    char text_box[MAX_ROWS][MAX_COLS];
+    char *opcode;
     
 
     for (int i = 0; i < MAX_ROWS; i++)
@@ -29,7 +31,23 @@ int main(int argc,char *argv[]){
         }
         
     }
-    
+
+    //initialize the line_count for counting the line
+        int line_count = 0;
+
+    //file_name
+    for (int i = 0; i < strlen(argv[0]); i++)
+    {
+        if (argv[0][i] == '/')
+        {
+            file_name = argv[0]+(i+1);
+            break;
+        }
+        
+    }
+
+
+    //file open
 
     file = fopen(argv[1],"r");
 
@@ -39,17 +57,81 @@ int main(int argc,char *argv[]){
         return -1;
     }
 
-    //파일을 읽어냄
+    
+    // Read each line from the file, store it in a text box and perform parsing
     for (int i = 0; fgets(text_box[i],MAX_COLS,file) != NULL; i++)
     {
-        interpret(text_box[i]);
-        
+        command_line = (char *)malloc(sizeof(char) * strlen(text_box[i]));
+        strcpy(command_line,text_box[i]);
+
+        if(parse(command_line,line_count+1,text_box[i])){
+            line_count++;
+       }
+            
     }
 
-    //printf("%d",order[1].rs + 1);
+        //initialize the program counter
+        program_counter = 0;
+
+        //execute the program
+        while(program_counter < line_count){
+
+        if (text_box[program_counter][0] == '\n')
+            {
+                // Skip if line is blank or comment
+                program_counter++;
+                continue;
+            }
+            
     
-    
-    
+        
+        // Obtain and process the instruction pointed to by the current program counter
+        command_line = (char *)malloc(sizeof(char) * strlen(text_box[program_counter]));
+        strcpy(command_line,text_box[program_counter]);
+
+        printf("%s",command_line);
+        
+        opcode = strtok(command_line," \n");
+
+        if (strcmp(opcode,"ADD") == 0)
+        {
+            ADD(command_line,file_name);
+        }
+        else if (strcmp(opcode,"SUB") == 0)
+        {
+            SUB(command_line,file_name);
+        }    
+        else if (strcmp(opcode,"MUL") == 0)
+        {
+            MUL(command_line,file_name);
+        }
+        else if (strcmp(opcode,"DIV") == 0)
+        {
+            DIV(command_line,file_name);
+        }
+        else if (strcmp(opcode,"LW") == 0)
+        {
+            LW(command_line,file_name);
+        } 
+        else if(strcmp(opcode,"NOP") == 0){
+            NOP(command_line,file_name);
+        }
+        else if(strcmp(opcode,"SLT") == 0){
+            slt(command_line,file_name);
+        }
+        else if(strcmp(opcode,"JMP") == 0){
+            JMP(command_line,file_name,line_count-1);
+        }
+        else if(strcmp(opcode,"BNE") == 0){
+            bne(command_line,file_name,line_count-1);
+        }
+        else if(strcmp(opcode,"BEQ") == 0){
+            beq(command_line,file_name,line_count-1);
+        }
+        free(command_line);
+        }
+
+    printf("%d\n",register_num[1]);
     
     return 0;
 }

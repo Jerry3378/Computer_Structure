@@ -11,6 +11,6 @@
  *   Returns: Returns 1 if parsing is successful, otherwise exits the program with an error message.
  */
 
-int parse(char *text_line);
+int parse(char *text_line, int line_number,char *text_box);
 
 #endif 

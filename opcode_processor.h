@@ -12,5 +12,17 @@ void SUB(char *text_line,char *file_name);
 void MUL(char *text_line,char *file_name);
 //perform division operation
 void DIV(char *text_line,char *file_name);
+//perform Load Word operation
+void LW(char *text_line, char *file_name);
+//perform End operation 
+void NOP(char *text_line,char *file_name);  
+//perform JMP operation
+void JMP(char *text_line,char *file_name,int line_count);
+//perform SLT operation
+void slt(char *text_line,char *file_name);
+//perform BEQ operation
+void beq(char *text_line,char *file_name,int line_count);
+//perform BNE operation
+void bne(char *text_line,char *file_name,int line_count);
 
 #endif

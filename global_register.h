@@ -20,4 +20,6 @@
 */
 extern int register_num[20];
 
+extern int program_counter;
+
 #endif
